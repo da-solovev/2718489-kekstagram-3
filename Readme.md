@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм»
 
 * Студент: [Dmitry Solovev](https://up.htmlacademy.ru/javascript-individual/3/user/2718489).
-* Наставник: `Неизвестно`.
+* Наставник: [Сергей Остаповец](https://htmlacademy.ru/profile/seraphim).
 
 ---
 
