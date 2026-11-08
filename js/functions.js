@@ -2,7 +2,8 @@ const hasValidLength = (str, maxLength) => str.length <= maxLength;
 
 const isPalindrome = (str) => {
   const normalizeStr = str.toLowerCase().replaceAll(' ', '');
-  return normalizeStr === normalizeStr.split('').reverse().join('');
+  const reversedStr = normalizeStr.split('').reverse().join('');
+  return normalizeStr === reversedStr;
 };
 
 const getNumbersFromString = (str) => {
