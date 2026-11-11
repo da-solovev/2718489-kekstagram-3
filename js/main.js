@@ -1,3 +1,8 @@
+const MIN_COUNT_LIKES = 15;
+const MAX_COUNT_LIKES = 200;
+const MAX_COUNT_COMMENTS = 30;
+const COUNT_AVATARS = 6;
+
 const PHOTO_DESCRIPTIONS = [
   'Закат над морем',
   'Горы в облаках',
@@ -33,6 +38,7 @@ const MESSAGES = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
+
 const getRandomInteger = (min, max) => {
   const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
   const upper = Math.floor(Math.max(Math.abs(min), Math.abs(max)));
@@ -49,7 +55,6 @@ const createRandomIdFromRangeGenerator = (min, max) => {
   return () => {
     let currentValues = getRandomInteger(min, max);
     if (previousValues.length >= max - min + 1) {
-      console.error(`Перебраны все числа из диапозона от ${min} до ${max}`);
       return null;
     }
     while (previousValues.includes(currentValues)) {
@@ -60,33 +65,29 @@ const createRandomIdFromRangeGenerator = (min, max) => {
   };
 };
 
-const generatePhotos = (countPhotos = 25, maxComments = 30) => {
-  const generatorPhotoId = createRandomIdFromRangeGenerator(1, countPhotos);
-  const generatorCommentId = createRandomIdFromRangeGenerator(1, countPhotos * maxComments);
-  const generatorCommentCount = createRandomIdFromRangeGenerator(0, maxComments);
+const createPhoto = ({ generatePhotoId, generateCommentId, generateCommentCount }) => {
+  const id = generatePhotoId();
 
-  const createComment = () => {
-    const id = generatorCommentId();
-
-    return {
-      id,
-      avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
+  return {
+    id,
+    url: `photos/${id}.jpg`,
+    description: getRandomElementFromArray(PHOTO_DESCRIPTIONS),
+    likes: getRandomInteger(MIN_COUNT_LIKES, MAX_COUNT_LIKES),
+    comments: Array.from({length: generateCommentCount()}, () => ({
+      id: generateCommentId(),
+      avatar: `img/avatar-${getRandomInteger(1, COUNT_AVATARS)}.svg`,
       message: getRandomElementFromArray(MESSAGES),
       name: getRandomElementFromArray(NAMES),
-    };
+    }))
+  };
+};
+
+const generatePhotos = (countPhotos = 25) => {
+  const generators = {
+    generatePhotoId: createRandomIdFromRangeGenerator(1, countPhotos),
+    generateCommentId: createRandomIdFromRangeGenerator(1, countPhotos * MAX_COUNT_COMMENTS),
+    generateCommentCount: createRandomIdFromRangeGenerator(0, MAX_COUNT_COMMENTS),
   };
 
-  const createPhoto = () => {
-    const id = generatorPhotoId();
-
-    return {
-      id,
-      url: `photos/${id}.jpg`,
-      description: getRandomElementFromArray(PHOTO_DESCRIPTIONS),
-      likes: getRandomInteger(15, 200),
-      comments: Array.from({length: generatorCommentCount()}, createComment)
-    };
-  };
-
-  return Array.from({length: countPhotos}, createPhoto);
+  return Array.from({length: countPhotos}, () => createPhoto(generators));
 };
