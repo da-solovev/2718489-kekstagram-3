@@ -38,7 +38,6 @@ const MESSAGES = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
-
 const getRandomInteger = (min, max) => {
   const lower = Math.ceil(Math.min(Math.abs(min), Math.abs(max)));
   const upper = Math.floor(Math.max(Math.abs(min), Math.abs(max)));
@@ -65,6 +64,12 @@ const createRandomIdFromRangeGenerator = (min, max) => {
   };
 };
 
+const createGenerator = (maxNumberId) => ({
+  generatePhotoId: createRandomIdFromRangeGenerator(1, maxNumberId),
+  generateCommentId: createRandomIdFromRangeGenerator(1, maxNumberId * MAX_COUNT_COMMENTS),
+  generateCommentCount: createRandomIdFromRangeGenerator(0, MAX_COUNT_COMMENTS),
+});
+
 const createPhoto = ({ generatePhotoId, generateCommentId, generateCommentCount }) => {
   const id = generatePhotoId();
 
@@ -83,11 +88,7 @@ const createPhoto = ({ generatePhotoId, generateCommentId, generateCommentCount 
 };
 
 const generatePhotos = (countPhotos = 25) => {
-  const generators = {
-    generatePhotoId: createRandomIdFromRangeGenerator(1, countPhotos),
-    generateCommentId: createRandomIdFromRangeGenerator(1, countPhotos * MAX_COUNT_COMMENTS),
-    generateCommentCount: createRandomIdFromRangeGenerator(0, MAX_COUNT_COMMENTS),
-  };
+  const generator = createGenerator(countPhotos);
 
-  return Array.from({length: countPhotos}, () => createPhoto(generators));
+  return Array.from({length: countPhotos}, () => createPhoto(generator));
 };
